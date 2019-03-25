@@ -2,15 +2,29 @@ package dfn;
 
 public final class decimalFractionalNumber<E> {
 
-    private static double number;
-    private static int count;
+    private final double number;
+    private final int count;
 
     public decimalFractionalNumber(E input, int c) {
         count = c;
-        int i = (int) Math.pow(10.0, count);
+        double i = Math.pow(10.0, count);
         if (input instanceof String) number = Double.parseDouble((String)input);
-        else if (Integer.class.isInstance(input) || Long.class.isInstance(input) || Float.class.isInstance(input) ||
-                Double.class.isInstance(input)) number = ((double) Math.floor((double) ((Number)input) * i)) / i;
+        else if (Integer.class.isInstance(input)) {
+            int a = (Integer) input;
+            number = a;
+        }
+        else if (Long.class.isInstance(input)) {
+            long a = (Long) input;
+            number = a;
+        }
+        else if (Float.class.isInstance(input)) {
+            float a = (Float) input;
+            number = Math.round((double)a * i) / i;
+        }
+        else if (Double.class.isInstance(input)){
+            double a = (Double)input;
+            number = Math.round(a * i) / i;
+        }
         else throw new IllegalArgumentException("wrong input type");
     }
 
@@ -23,29 +37,20 @@ public final class decimalFractionalNumber<E> {
     }
 
     public decimalFractionalNumber multiplication(decimalFractionalNumber other) {
-        int bfr;
-        int result = 0;
-        int i = 1;
-        if (number * other.number < 0) bfr = -1;
-        else bfr = 1;
-        int a = (int) Math.floor(number * (int) Math.pow(10, count));
-        while (a % 10 != 0) {
-            int b = (int) Math.floor(other.number * (int) Math.pow(10, other.count));
-            int j = 1;
-            int dec = a % 10;
-            while (b % 10 != 0) {
-                result += dec * (b % 10) * i * j;
-                b /= 10;
-                j *= 10;
-            }
-            a /= 10;
-            i *= 10;
+        long result = 0;
+        long a = Math.round(number * Math.pow(10.0, count));
+        long b = Math.round(other.number * Math.pow(10, other.count));
+        while (b != 0) {
+            result += b % 10 * a;
+            b /= 10;
+            a *= 10;
         }
-        return new decimalFractionalNumber(bfr * result * Math.pow(0.1, count + other.count), count + other.count);
+        return new decimalFractionalNumber(result * Math.pow(0.1, count + other.count), Math.max(count, other.count));
     }
 
     public decimalFractionalNumber roundOff(int scale) {
-        return new decimalFractionalNumber(number, scale);
+        double i = Math.pow(10.0, scale);
+        return new decimalFractionalNumber(Math.floor(number * i) / i, scale);
     }
 
     public int toInt() {
@@ -63,8 +68,7 @@ public final class decimalFractionalNumber<E> {
     public float toFloat() {
         if (number > Float.MAX_VALUE || number < Float.MIN_VALUE)
             throw new IllegalArgumentException("number is not in range of float");
-        int i = (int) Math.pow(10.0, count);
-        return ((float) number * i);
+        return (float) number;
     }
 
     public double toDouble() {
@@ -74,5 +78,15 @@ public final class decimalFractionalNumber<E> {
     @Override
     public String toString() {
         return "" + number;
+    }
+
+    @Override
+      public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (decimalFractionalNumber.class.isInstance(obj)) {
+            decimalFractionalNumber other = (decimalFractionalNumber) obj;
+            return (number == other.number && count == other.count);
+        }
+        return false;
     }
 }
