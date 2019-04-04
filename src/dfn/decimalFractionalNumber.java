@@ -32,20 +32,23 @@ public final class decimalFractionalNumber {
     }
 
     private void whereIsPoint(String a) {
+        pointPosition = a.length();
+        String result = a.substring(0, pointPosition);
         for (int i = 0; i < a.length(); i++) if (a.charAt(i) == '.') {
             pointPosition = i;
+            result = a.substring(0, pointPosition) + a.substring(pointPosition + 1);
             break;
         }
-        String result = a.substring(0, pointPosition) + a.substring(pointPosition + 1);
         if (result.length() > count) throw new IllegalArgumentException();
         number = result;
     }
 
     public decimalFractionalNumber plus(decimalFractionalNumber other) {
         String aBefore = number.substring(0, pointPosition);
-        String bBefore = other.number.substring(0, pointPosition);
+        String bBefore = other.number.substring(0, other.pointPosition);
         String aAfter = number.substring(pointPosition);
-        String bAfter = other.number.substring(pointPosition);
+        String bAfter = other.number.substring(other.pointPosition);
+        int point = Math.max(aBefore.length(), bBefore.length());
         String [] arr =
                 new String[Math.max(aBefore.length(), bBefore.length())
                         + Math.max(aAfter.length(), bAfter.length()) + 1];
@@ -54,68 +57,71 @@ public final class decimalFractionalNumber {
             int a = 0;
             int b = 0;
             int result = 0;
-            if (i == pointPosition) {
-                arr[pointPosition] = ".";
+            if (i == point) {
+                arr[i] = ".";
                 continue;
             }
-            else if (i > pointPosition) {
-                if (pointPosition + aAfter.length() < i) a = 0;
-                else a = (int) aAfter.charAt(i - pointPosition - 1) - 48;
-                if (pointPosition + bAfter.length() < i) b = 0;
-                else b = (int) bAfter.charAt(i - pointPosition - 1) - 48;
+            else if (i > point) {
+                if (point + aAfter.length() < i) a = 0;
+                else a = (int) aAfter.charAt(i - point - 1) - 48;
+                if (point + bAfter.length() < i) b = 0;
+                else b = (int) bAfter.charAt(i - point - 1) - 48;
             }
             else {
-                if (pointPosition - aAfter.length() > i) a = 0;
-                else a = (int) aAfter.charAt(i - pointPosition + aAfter.length()) - 48;
-                if (pointPosition - bAfter.length() < i) b = 0;
-                else b = (int) bAfter.charAt(i - pointPosition + bAfter.length()) - 48;
+                if (point - aBefore.length() > i) a = 0;
+                else a = (int) aBefore.charAt(i - point + aBefore.length()) - 48;
+                if (point - bBefore.length() > i) b = 0;
+                else b = (int) bBefore.charAt(i - point + bBefore.length()) - 48;
             }
             result = a + b;
-            arr[i] = String.valueOf(result % 10 + nxt);
-            nxt = result / 10;
+            arr[i] = String.valueOf((result + nxt) % 10);
+            nxt = (result + nxt) / 10;
         }
         String num = "";
-        for (int i = 0; i < arr.length; i++) num += arr[i];
-        return new decimalFractionalNumber(num, arr.length - 1);
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println(arr[i]);
+            num += arr[i];
+        }
+
+        return new decimalFractionalNumber(num, Math.max(count, other.count));
     }
 
     public decimalFractionalNumber minus(decimalFractionalNumber other) {
         String aBefore = number.substring(0, pointPosition);
-        String bBefore = other.number.substring(0, pointPosition);
+        String bBefore = other.number.substring(0, other.pointPosition);
         String aAfter = number.substring(pointPosition);
-        String bAfter = other.number.substring(pointPosition);
-        String[] arr =
-                new String[Math.max(aBefore.length(), bBefore.length())
-                        + Math.max(aAfter.length(), bAfter.length()) + 1];
+        String bAfter = other.number.substring(other.pointPosition);
+        int point = Math.max(aBefore.length(), bBefore.length());
+        String[] arr = new String[point + Math.max(aAfter.length(), bAfter.length()) + 1];
         int nxt = 0;
         for (int i = arr.length - 1; i >= 0; i--) {
             int a = 0;
             int b = 0;
             int result = 0;
-            if (i == pointPosition) {
-                arr[pointPosition] = ".";
+            if (i == point) {
+                arr[i] = ".";
                 continue;
             }
-            else if (i > pointPosition) {
-                if (pointPosition + aAfter.length() < i) a = 0;
-                else a = (int) aAfter.charAt(i - pointPosition - 1) - 48;
+            else if (i > point) {
+                if (point + aAfter.length() < i) a = 0;
+                else a = (int) aAfter.charAt(i - point - 1) - 48;
                 if (pointPosition + bAfter.length() < i) b = 0;
-                else b = (int) bAfter.charAt(i - pointPosition - 1) - 48;
+                else b = (int) bAfter.charAt(i - point - 1) - 48;
             }
             else {
-                if (pointPosition - aBefore.length() > i) a = 0;
-                else a = (int) aBefore.charAt(i - pointPosition + aBefore.length()) - 48;
-                if (pointPosition - bBefore.length() < i) b = 0;
-                else b = (int) bBefore.charAt(i - pointPosition + bBefore.length()) - 48;
+                if (point - aBefore.length() > i) a = 0;
+                else a = (int) aBefore.charAt(i - point + aBefore.length()) - 48;
+                if (point - bBefore.length() > i) b = 0;
+                else b = (int) bBefore.charAt(i - point + bBefore.length()) - 48;
             }
-            result = a - b;
-            arr[i] = String.valueOf(Math.abs(result) % 10 - nxt);
-            if (result < 0) nxt = 1;
+            result = (a + 10 - b) % 10;
+            arr[i] = String.valueOf((result + 10 - nxt) % 10);
+            if (a < b || result < nxt) nxt = 1;
             else nxt = 0;
         }
         String num = "";
         for (int i = 0; i < arr.length; i++) num += arr[i];
-        return new decimalFractionalNumber(num, arr.length - 1);
+        return new decimalFractionalNumber(num, Math.max(count, other.count));
     }
 
     public decimalFractionalNumber multiplication(decimalFractionalNumber other) {
@@ -147,13 +153,14 @@ public final class decimalFractionalNumber {
             else break;
         }
         int nxt = 0;
-        for (int i = arr.length - 1; i > s + Math.max(count, other.count); i--) {
-            if (Integer.parseInt(arr[i]) - 30 + nxt >= 5) nxt = 1;
+        int round = arr.length - 1;
+        while (round > s + Math.max(count, other.count)) {
+            if (Integer.parseInt(arr[round]) - 30 + nxt >= 5) nxt = 1;
             else nxt = 0;
+            round--;
         }
-        arr[s + Math.max(count, other.count)] =
-                String.valueOf(Integer.parseInt(arr[s + Math.max(count, other.count)]) + nxt);
-        for (int i = s + 1; i <= s + count; i++) {
+        arr[round] = String.valueOf(Integer.parseInt(arr[round]) + nxt);
+        for (int i = s + 1; i <= round; i++) {
             if (i == arr.length - (number.length() - pointPosition) - (other.number.length() - other.pointPosition))
                 num += ".";
             num += arr[i];
@@ -162,9 +169,11 @@ public final class decimalFractionalNumber {
     }
 
     public decimalFractionalNumber roundOff(int scale) {
-        if (number.length() - pointPosition < scale) throw new IllegalArgumentException();
+        if (pointPosition > scale) throw new IllegalArgumentException();
+        int a = number.length();
+        if (scale < number.length()) a = scale;
         return new decimalFractionalNumber(number.substring(0, pointPosition) + "."
-                + number.substring(pointPosition, scale), pointPosition - 1 + scale);
+                + number.substring(pointPosition, a), scale);
     }
 
     public int toInt() {
@@ -189,13 +198,15 @@ public final class decimalFractionalNumber {
 
     @Override
     public String toString() {
-        return number.substring(0, pointPosition) + "." + number.substring(pointPosition);
+        String result = number.substring(0, pointPosition);
+        if (pointPosition != number.length()) result += "." + number.substring(pointPosition);
+        return result;
     }
 
     @Override
       public boolean equals(Object obj) {
         if (this == obj) return true;
-         if (decimalFractionalNumber.class.isInstance(obj)) {
+        if (decimalFractionalNumber.class.isInstance(obj)) {
             decimalFractionalNumber other = (decimalFractionalNumber) obj;
             return number.equals(other.number) && count == other.count && pointPosition == other.pointPosition;
         }
