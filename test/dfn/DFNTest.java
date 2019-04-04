@@ -6,12 +6,12 @@ class DFNTest {
 
     @org.junit.jupiter.api.Test
     void plus() {
-        /*assertEquals(new decimalFractionalNumber(3.353, 4),
+        assertEquals(new decimalFractionalNumber(3.353, 4),
                 new decimalFractionalNumber(2.353, 4).plus(new decimalFractionalNumber(1.0, 2)));
         assertEquals(new decimalFractionalNumber(3.353, 6),
                 new decimalFractionalNumber(2.353f, 6).plus(new decimalFractionalNumber(1, 1)));
         assertEquals(new decimalFractionalNumber(3.0, 4),
-                new decimalFractionalNumber(2, 4).plus(new decimalFractionalNumber(1.0, 2)));*/
+                new decimalFractionalNumber(2, 4).plus(new decimalFractionalNumber(1.0, 2)));
         assertEquals(new decimalFractionalNumber(200.0, 4),
                 new decimalFractionalNumber(199l, 4).plus(new decimalFractionalNumber(1.0, 2)));
         assertEquals(new decimalFractionalNumber(3.353, 4),
