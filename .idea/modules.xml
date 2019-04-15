@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/decimalFractionalNumber.iml" filepath="$PROJECT_DIR$/decimalFractionalNumber.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DecimalFractionalNumber.iml" filepath="$PROJECT_DIR$/DecimalFractionalNumber.iml" />
     </modules>
   </component>
 </project>
