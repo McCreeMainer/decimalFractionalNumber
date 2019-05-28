@@ -1,5 +1,7 @@
 package dfn;
 
+import java.util.Locale;
+
 public final class DecimalFractionalNumber {
 
     private String number;
@@ -20,14 +22,14 @@ public final class DecimalFractionalNumber {
 
     public DecimalFractionalNumber(float input, int c) {
         count = c;
-        number = String.format("%." + c + "f", input).replace(",", ".");
+        number = String.format("%." + c + "f", input, Locale.ROOT);
         if (Float.parseFloat(number) != input) throw new IllegalArgumentException();
         roundNulls(number);
     }
 
     public DecimalFractionalNumber(double input, int c) {
         count = c;
-        number = String.format("%." + c + "f", input).replace(",", ".");
+        number = String.format("%." + c + "f", input, Locale.ROOT);
         if (Double.parseDouble(number) != input) throw new IllegalArgumentException();
         roundNulls(number);
     }
